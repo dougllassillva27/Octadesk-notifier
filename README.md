@@ -13,8 +13,10 @@ Este UserScript para Tampermonkey foi criado para resolver um desafio comum em p
 
 Além do sistema de notificação, o script conta com um **painel de controle redesenhado**, com visual dark e clean, que permite ao usuário visualizar um log de todas as ações e configurar o comportamento da ferramenta de forma elegante e eficiente.
 
-img/Painel de Controle - Logs.png
-img/Painel de Controle - Configurações.png
+<div align="center">
+  <img src="img/Painel de Controle - Logs.png" alt="Painel de Controle - Aba de Logs" width="48%" />
+  <img src="img/Painel de Controle - Configurações.png" alt="Painel de Controle - Aba de Configurações" width="48%" />
+</div>
 
 ## Funcionalidades Principais
 
