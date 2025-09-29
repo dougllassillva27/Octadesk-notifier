@@ -1,6 +1,6 @@
 # Octadesk Notifier
 
-**Versão:** 3.11  
+**Versão:** 3.14
 **Autor:** Douglas Silva
 
 Uma ferramenta de automação e monitoramento para o Octadesk, projetada para notificar proativamente sobre conversas que exigem atenção. O script é totalmente configurável através de uma interface própria, com design moderno e intuitivo, e mantém um histórico detalhado de suas operações.
@@ -21,6 +21,10 @@ Além do sistema de notificação, o script conta com um **painel de controle re
 ## Funcionalidades Principais
 
 - **Notificações Persistentes e Inteligentes:** Alerta o usuário sobre conversas pendentes em intervalos regulares, garantindo que os avisos sejam vistos.
+- **Controle de Pausa de Notificações:**
+  - **Pausa Temporária:** Permite pausar as notificações com opções pré-definidas de **5 minutos, 1 hora ou 24 horas**.
+  - **Reativação Manual:** Um botão "Reativar" substitui os botões de pausa, dando ao usuário o controle para retomar as notificações a qualquer momento.
+  - **Feedback Visual Claro:** O painel exibe um status de "Pausado até HH:MM" e alterna os botões de controle para evitar ambiguidades.
 - **Dois Modos de Notificação:**
   1.  **Modo Condicional (Padrão):** Notifica apenas se houver conversas na fila principal E também na seção "Não respondidas".
   2.  **Modo Geral:** Notifica sempre que houver qualquer conversa na fila principal ("Suas conversas").
@@ -32,8 +36,8 @@ Além do sistema de notificação, o script conta com um **painel de controle re
   - **Aba de Configurações:** Interface amigável e visualmente integrada para personalizar o modo de notificação e o intervalo.
   - **Painel Centralizado e Arrastável:** Abre no centro da tela e pode ser movido livremente.
   - **Limpeza de Logs com Confirmação por Modal:** Um botão para limpar o histórico, com confirmação via modal personalizado (sem alertas nativos).
-- **Modais Personalizados:** Todas as mensagens de feedback (salvar configurações, limpar logs) são exibidas em modais elegantes, com auto-fechamento após 3 segundos.
-- **Persistência de Dados:** Todas as configurações escolhidas pelo usuário são salvas no `localStorage` do navegador, mantendo suas preferências mesmo após fechar ou recarregar a página.
+- **Modais Personalizados:** Todas as mensagens de feedback (salvar configurações, limpar logs, pausar notificações) são exibidas em modais elegantes, com auto-fechamento.
+- **Persistência de Dados:** Todas as configurações e o estado de pausa são salvos no `localStorage` do navegador, mantendo suas preferências mesmo após fechar ou recarregar a página.
 - **Escopo Otimizado:** O script é executado exclusivamente na página de chat do Octadesk, garantindo eficiência e não consumindo recursos em outras áreas do site.
 - **Proteção contra Execução Múltipla:** Mecanismos robustos garantem que apenas um único timer esteja ativo, evitando notificações duplicadas ou comportamentos erráticos.
 
@@ -48,7 +52,7 @@ Além do sistema de notificação, o script conta com um **painel de controle re
 
 1.  Abra o painel do **Tampermonkey** no seu navegador e clique em **"Criar um novo script..."**.
 2.  Apague todo o conteúdo padrão que aparece na tela de edição.
-3.  Copie o código completo do arquivo `Octadesk Notifier-3.11.user.js`.
+3.  Copie o código completo do arquivo `Octadesk Notifier-3.14.user.js`.
 4.  Cole o código na tela de edição do Tampermonkey.
 5.  Salve o script clicando em **Arquivo > Salvar**.
 6.  Certifique-se de que o script está **ativado** no painel do Tampermonkey.
@@ -57,12 +61,17 @@ Além do sistema de notificação, o script conta com um **painel de controle re
 
 1.  **Funcionamento Automático:** Com o script instalado e ativado, basta manter a página de chat do Octadesk (`https://app.octadesk.com/chat/`) aberta em uma aba do navegador. O script fará todo o trabalho de monitoramento e notificação em segundo plano.
 2.  **Acessando o Painel de Controle:** A qualquer momento, pressione o atalho **`Ctrl+Shift+L`** para abrir o painel de controle. Com ele, você pode:
-    - Verificar o histórico de ações na aba **Logs** (rolagem automática para o final).
+    - Verificar o histórico de ações na aba **Logs**.
     - Mudar o comportamento do script na aba **Configurações**.
 3.  **Configurando o Script:**
     - Na aba "Configurações", selecione o "Modo de Notificação" e o "Intervalo de Verificação" de sua preferência.
     - Clique no botão **"Salvar e Aplicar"**. Um **modal elegante** confirmará que as novas configurações foram salvas e já estão em vigor.
-4.  **Limpando os Logs:**
+4.  **Pausando e Reativando Notificações:**
+    - Na aba "Logs", localize no rodapé os botões de pausa.
+    - Clique em **"Pausar 5m"**, **"Pausar 1h"** ou **"Pausar 24h"** para interromper as notificações pelo período desejado.
+    - O painel permanecerá aberto, exibindo o status "Pausado até..." no cabeçalho.
+    - Para retomar as notificações antes do tempo, clique no botão **"Reativar"** que aparecerá no mesmo local.
+5.  **Limpando os Logs:**
     - Na aba "Logs", clique em **"Limpar Logs"**.
     - Um **modal de confirmação** aparecerá. Clique em **"Sim"** para confirmar a ação.
 
@@ -76,4 +85,4 @@ Além do sistema de notificação, o script conta com um **painel de controle re
   - Recarregue a página do Octadesk (`Ctrl+F5`).
   - Verifique o console do desenvolvedor (F12) por possíveis mensagens de erro em vermelho.
 - **Notificações estão duplicando ou com intervalos irregulares:**
-  - Recarregue a página. A versão 3.11 inclui proteções contra múltiplos timers, mas um recarrego garante um estado limpo.
+  - Recarregue a página. A versão atual inclui proteções contra múltiplos timers, mas um recarrego garante um estado limpo.
