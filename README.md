@@ -17,7 +17,7 @@ Além do sistema de notificação, o script conta com um **painel de controle re
   <img src="img/Painel de Controle - Logs.png" alt="Painel de Controle - Aba de Logs" width="48%" />
   <img src="img/Painel de Controle - Configurações.png" alt="Painel de Controle - Aba de Configurações" width="48%" />
   <br>
-  <img src="img/Painel de Control - Modo pausa.png" alt="Visão Geral do Painel de Controle" width="97%" />
+  <img src="img/Painel de Control - Modo pausa.png" alt="Visão Geral do Painel de Controle" width="55%" />
 </div>
 
 ## Funcionalidades Principais
