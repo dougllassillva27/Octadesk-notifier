@@ -18,11 +18,8 @@ Este UserScript para Tampermonkey foi criado para resolver múltiplos desafios n
 O script conta com um **painel de controle moderno** (3 abas), **botão flutuante arrastável** e **posição persistente**, garantindo que nunca atrapalhe sua visualização.
 
 <div align="center">
-  <video width="80%" autoplay loop muted playsinline>
-    <source src="img/Octadesk Notifier.mp4" type="video/mp4">
-    Seu navegador não suporta a tag de vídeo.
-  </video>
-  <p><em>Demonstração completa do Octadesk Notifier v5.3</em></p>
+  <img src="img/Octadesk-Notifier.gif" alt="Demonstração do Octadesk Notifier v5.3" width="85%" />
+  <p><em>📹 Demonstração completa: Notificações, Logs, Configurações e Atalhos</em></p>
 </div>
 
 ---
