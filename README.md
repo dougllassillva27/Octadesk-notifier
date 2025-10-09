@@ -1,90 +1,203 @@
 # Octadesk Notifier
 
-**Versão:** 3.14
+**Versão:** 3.22  
 **Autor:** Douglas Silva
 
-Uma ferramenta de automação e monitoramento para o Octadesk, projetada para notificar proativamente sobre conversas que exigem atenção. O script é totalmente configurável através de uma interface própria, com design moderno e intuitivo, e mantém um histórico detalhado de suas operações.
+Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
 
 ---
 
 ## Visão Geral
 
-Este UserScript para Tampermonkey foi criado para resolver um desafio comum em plataformas de chat: a necessidade de ser constantemente lembrado de conversas pendentes sem precisar manter a atenção fixa na tela. A ferramenta monitora ativamente a seção de chat do Octadesk, atualiza os dados automaticamente e envia notificações para o desktop do usuário com base em regras personalizáveis, garantindo que nenhuma conversa importante seja esquecida.
+Este UserScript para Tampermonkey foi criado para resolver múltiplos desafios no dia a dia do atendimento via Octadesk:
 
-Além do sistema de notificação, o script conta com um **painel de controle redesenhado**, com visual dark e clean, que permite ao usuário visualizar um log de todas as ações e configurar o comportamento da ferramenta de forma elegante e eficiente.
+1. **Monitoramento Inteligente:** Detecta conversas pendentes e envia notificações automáticas
+2. **Logs Detalhados:** Registra todas as ações com timestamp para auditoria e troubleshooting
+3. **Atalhos de Texto:** Cria mensagens personalizadas com detecção automática do técnico em atendimento
+
+O script conta com um **painel de controle moderno** (3 abas), **botão flutuante arrastável** e **posição persistente**, garantindo que nunca atrapalhe sua visualização.
 
 <div align="center">
-  <img src="img/Painel de Controle - Logs.png" alt="Painel de Controle - Aba de Logs" width="48%" />
-  <img src="img/Painel de Controle - Configurações.png" alt="Painel de Controle - Aba de Configurações" width="48%" />
-  <br>
-  <img src="img/Painel de Control - Modo pausa.png" alt="Visão Geral do Painel de Controle" width="55%" />
+  <video width="80%" autoplay loop muted playsinline>
+    <source src="img/Octadesk Notifier.mp4" type="video/mp4">
+    Seu navegador não suporta a tag de vídeo.
+  </video>
+  <p><em>Demonstração completa do Octadesk Notifier v5.3</em></p>
 </div>
+
+---
 
 ## Funcionalidades Principais
 
-- **Notificações Persistentes e Inteligentes:** Alerta o usuário sobre conversas pendentes em intervalos regulares, garantindo que os avisos sejam vistos.
+### 🔔 Sistema de Notificações
+
+- **Notificações Persistentes e Inteligentes:** Alerta o usuário sobre conversas pendentes em intervalos regulares
 - **Controle de Pausa de Notificações:**
-  - **Pausa Temporária:** Permite pausar as notificações com opções pré-definidas de **5 minutos, 1 hora ou 24 horas**.
-  - **Reativação Manual:** Um botão "Reativar" substitui os botões de pausa, dando ao usuário o controle para retomar as notificações a qualquer momento.
-  - **Feedback Visual Claro:** O painel exibe um status de "Pausado até HH:MM" e alterna os botões de controle para evitar ambiguidades.
+  - Pausa temporária com opções de **5 minutos, 1 hora ou 24 horas**
+  - Botão "Reativar" para retomar notificações a qualquer momento
+  - Feedback visual com status "Pausado até HH:MM"
+  - **Indicador visual no botão:** Ícone muda de 📊 para ⏸️ quando pausado
 - **Dois Modos de Notificação:**
-  1.  **Modo Condicional (Padrão):** Notifica apenas se houver conversas na fila principal E também na seção "Não respondidas".
-  2.  **Modo Geral:** Notifica sempre que houver qualquer conversa na fila principal ("Suas conversas").
-- **Intervalos Configuráveis:** O usuário pode escolher a frequência das verificações, com opções de **30 segundos, 1, 3 ou 5 minutos**.
-- **Atualização Automática:** O script clica proativamente no botão "Atualizar" da interface do Octadesk antes de cada verificação, garantindo que os dados de contagem estejam sempre corretos.
-- **Painel de Controle Modernizado:**
-  - Acessível pelo atalho **`Ctrl+Shift+L`**.
-  - **Aba de Logs:** Exibe um histórico detalhado e com timestamp de todas as ações executadas pelo script. A rolagem é automática, sempre levando ao final para mostrar as entradas mais recentes.
-  - **Aba de Configurações:** Interface amigável e visualmente integrada para personalizar o modo de notificação e o intervalo.
-  - **Painel Centralizado e Arrastável:** Abre no centro da tela e pode ser movido livremente.
-  - **Limpeza de Logs com Confirmação por Modal:** Um botão para limpar o histórico, com confirmação via modal personalizado (sem alertas nativos).
-- **Modais Personalizados:** Todas as mensagens de feedback (salvar configurações, limpar logs, pausar notificações) são exibidas em modais elegantes, com auto-fechamento.
-- **Persistência de Dados:** Todas as configurações e o estado de pausa são salvos no `localStorage` do navegador, mantendo suas preferências mesmo após fechar ou recarregar a página.
-- **Escopo Otimizado:** O script é executado exclusivamente na página de chat do Octadesk, garantindo eficiência e não consumindo recursos em outras áreas do site.
-- **Proteção contra Execução Múltipla:** Mecanismos robustos garantem que apenas um único timer esteja ativo, evitando notificações duplicadas ou comportamentos erráticos.
+  1. **Modo Condicional (Padrão):** Notifica apenas se houver conversas em "Suas conversas" E em "Não respondidas"
+  2. **Modo Geral:** Notifica sempre que houver qualquer conversa em "Suas conversas"
+- **Intervalos Configuráveis:** Frequência de verificação ajustável: **30 segundos, 1, 3 ou 5 minutos**
+- **Atualização Automática:** Clica no botão "Atualizar" antes de cada verificação
+
+### 📊 Logs e Monitoramento
+
+- **Histórico Detalhado:** Timestamp preciso de todas as ações (ciclos, pausas, configurações)
+- **Rolagem Automática:** Logs sempre mostram as entradas mais recentes
+- **Limpeza com Confirmação:** Modal personalizado para confirmar exclusão
+- **Persistência:** Logs salvos no localStorage do navegador
+
+### ⚡ Atalhos de Texto
+
+- **Atalhos Rápidos:**
+  - Digite `\dia` para inserir mensagem de bom dia
+  - Digite `\tarde` para inserir mensagem de boa tarde
+- **Auto-Detecção:** Captura automaticamente o nome do técnico em atendimento da conversa
+- **Variáveis Disponíveis:**
+  - `{saudacao}` → Substituído por "Bom dia" ou "Boa tarde"
+  - `{tecnico}` → Nome do técnico detectado automaticamente
+  - `{atendente}` → Seu nome configurado
+- **Templates Personalizáveis:** Configure suas próprias mensagens na aba "Atalhos"
+- **Preview em Tempo Real:** Visualize como a mensagem ficará antes de salvar
+
+### 🎨 Interface Moderna
+
+- **Painel de Controle com 3 Abas:**
+  1. **Logs:** Histórico de operações + controles de pausa
+  2. **Configurações:** Modo de notificação + intervalo de verificação
+  3. **Atalhos:** Configuração de mensagens personalizadas
+- **Botão Flutuante Arrastável:**
+  - **Clique:** Abre o painel de controle
+  - **Arraste:** Reposicione o botão em qualquer lugar da tela
+  - **Posição Salva:** Mantém a posição escolhida após recarregar
+- **Atalho de Teclado:** `Ctrl+Shift+L` abre/fecha o painel
+- **Design Dark:** Interface moderna com gradientes escuros
+- **Responsivo:** Adapta-se a diferentes tamanhos de tela e zoom
+
+---
 
 ## Como Usar
 
 ### Requisitos
 
-1.  Um navegador moderno como **Google Chrome** ou **Mozilla Firefox**.
-2.  A extensão **Tampermonkey** instalada no navegador.
+1. Navegador moderno (**Chrome**, **Firefox**, **Edge**)
+2. Extensão **Tampermonkey** instalada
 
 ### Instalação
 
-1.  Abra o painel do **Tampermonkey** no seu navegador e clique em **"Criar um novo script..."**.
-2.  Apague todo o conteúdo padrão que aparece na tela de edição.
-3.  Copie o código completo do arquivo `Octadesk Notifier-3.14.user.js`.
-4.  Cole o código na tela de edição do Tampermonkey.
-5.  Salve o script clicando em **Arquivo > Salvar**.
-6.  Certifique-se de que o script está **ativado** no painel do Tampermonkey.
+1. Abra o painel do **Tampermonkey** e clique em **"Criar um novo script..."**
+2. Apague todo o conteúdo padrão
+3. Copie o código completo do arquivo `octadesk-notifier-v3.22.user.js`
+4. Cole na tela de edição do Tampermonkey
+5. Salve o script (**Arquivo > Salvar** ou `Ctrl+S`)
+6. Certifique-se de que está **ativado** no painel
+
+### Configuração Inicial
+
+#### 1. Configure as Notificações
+
+1. Abra a página de chat do Octadesk (`https://app.octadesk.com/chat/`)
+2. Pressione `Ctrl+Shift+L` ou clique no botão flutuante 📊
+3. Vá para a aba **"Configurações"**
+4. Escolha:
+   - **Modo de Notificação** (Condicional ou Geral)
+   - **Intervalo de Verificação** (30s, 1min, 3min ou 5min)
+5. Clique em **"Salvar e Aplicar"**
+
+#### 2. Configure os Atalhos (Opcional)
+
+1. No painel, vá para a aba **"Atalhos"**
+2. Preencha:
+   - **Seu Nome:** Como você quer se apresentar
+   - **Mensagem "\dia":** Template para bom dia
+   - **Mensagem "\tarde":** Template para boa tarde
+3. Use as variáveis `{saudacao}`, `{tecnico}` e `{atendente}`
+4. Veja o preview em tempo real
+5. Clique em **"✓ Salvar"**
 
 ### Utilização Diária
 
-1.  **Funcionamento Automático:** Com o script instalado e ativado, basta manter a página de chat do Octadesk (`https://app.octadesk.com/chat/`) aberta em uma aba do navegador. O script fará todo o trabalho de monitoramento e notificação em segundo plano.
-2.  **Acessando o Painel de Controle:** A qualquer momento, pressione o atalho **`Ctrl+Shift+L`** para abrir o painel de controle. Com ele, você pode:
-    - Verificar o histórico de ações na aba **Logs**.
-    - Mudar o comportamento do script na aba **Configurações**.
-3.  **Configurando o Script:**
-    - Na aba "Configurações", selecione o "Modo de Notificação" e o "Intervalo de Verificação" de sua preferência.
-    - Clique no botão **"Salvar e Aplicar"**. Um **modal elegante** confirmará que as novas configurações foram salvas e já estão em vigor.
-4.  **Pausando e Reativando Notificações:**
-    - Na aba "Logs", localize no rodapé os botões de pausa.
-    - Clique em **"Pausar 5m"**, **"Pausar 1h"** ou **"Pausar 24h"** para interromper as notificações pelo período desejado.
-    - O painel permanecerá aberto, exibindo o status "Pausado até..." no cabeçalho.
-    - Para retomar as notificações antes do tempo, clique no botão **"Reativar"** que aparecerá no mesmo local.
-5.  **Limpando os Logs:**
-    - Na aba "Logs", clique em **"Limpar Logs"**.
-    - Um **modal de confirmação** aparecerá. Clique em **"Sim"** para confirmar a ação.
+#### Notificações Automáticas
 
-## Solução de Problemas (Troubleshooting)
+- Basta manter a aba do Octadesk aberta
+- O script monitora automaticamente e notifica quando necessário
+- Permita notificações no navegador quando solicitado
 
-- **As notificações não aparecem na tela:**
-  - Verifique se o seu sistema operacional (Windows ou macOS) não está com o modo "Não Incomodar" ou "Assistente de Foco" ativado, pois isso pode suprimir as notificações.
-  - Na primeira vez que o script roda, o navegador pode pedir permissão para exibir notificações. Certifique-se de que você permitiu.
-- **O painel não abre com `Ctrl+Shift+L`:**
-  - Verifique se o script está realmente ativado no painel do Tampermonkey.
-  - Recarregue a página do Octadesk (`Ctrl+F5`).
-  - Verifique o console do desenvolvedor (F12) por possíveis mensagens de erro em vermelho.
-- **Notificações estão duplicando ou com intervalos irregulares:**
-  - Recarregue a página. A versão atual inclui proteções contra múltiplos timers, mas um recarrego garante um estado limpo.
+#### Pausar Notificações
+
+1. Abra o painel (`Ctrl+Shift+L`)
+2. Na aba "Logs", clique em:
+   - **"Pausar 5m"** / **"Pausar 1h"** / **"Pausar 24h"**
+3. O botão flutuante mudará para ⏸️
+4. Para retomar: clique em **"▶️ Reativar"**
+
+#### Usar Atalhos de Texto
+
+1. Abra uma conversa no Octadesk
+2. Role até ver a mensagem **"Técnico em atendimento: [Nome]"**
+3. No campo de texto, digite:
+   - `\dia` → Insere mensagem de bom dia
+   - `\tarde` → Insere mensagem de boa tarde
+4. A mensagem será inserida automaticamente com o nome do técnico
+
+#### Posicionar o Botão
+
+- **Clique e arraste** o botão flutuante para qualquer posição
+- A posição é salva automaticamente
+- Recarregue a página: o botão volta ao mesmo lugar
+
+---
+
+## Solução de Problemas
+
+### Notificações não aparecem
+
+- Verifique se o navegador tem permissão para notificar
+- Desative "Não Incomodar" no sistema operacional
+- Confirme que o script está ativado no Tampermonkey
+
+### Painel não abre com Ctrl+Shift+L
+
+- Verifique se o script está ativo no Tampermonkey
+- Recarregue a página (`Ctrl+F5`)
+- Abra o console (F12) e procure por erros
+
+### Atalhos \dia e \tarde não funcionam
+
+- Certifique-se de que a mensagem **"Técnico em atendimento: [Nome]"** está visível na conversa
+- Role o chat até a mensagem aparecer na tela
+- Verifique se você configurou os templates na aba "Atalhos"
+
+### Botão flutuante está sobrepondo elementos
+
+- **Arraste o botão** para outra posição na tela
+- A nova posição será salva automaticamente
+
+### Notificações duplicadas ou irregulares
+
+- Recarregue a página (`Ctrl+F5`)
+- Certifique-se de que não há múltiplas abas do Octadesk abertas
+- O script possui proteção contra timers duplicados
+
+---
+
+## Tecnologias Utilizadas
+
+- **JavaScript ES6+**
+- **Tampermonkey/Greasemonkey APIs**
+- **Web Notifications API**
+- **LocalStorage API**
+- **CSS3 (Gradients, Animations, Flexbox)**
+
+---
+
+## Licença
+
+Este projeto é de uso pessoal e educacional. Sinta-se livre para modificar e adaptar às suas necessidades.
+
+---
+
+**🎯 Octadesk Notifier v5.3 - Nunca mais perca uma conversa importante!**
