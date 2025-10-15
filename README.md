@@ -1,6 +1,6 @@
 # Octadesk Notifier
 
-**Versão:** 5.4
+**Versão:** 5.4   
 **Autor:** Douglas Silva
 
 Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
