@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Octadesk Notifier
 // @namespace    http://tampermonkey.net/
-// @version      5.5.1
-// @description  Sistema completo: Notificações + Logs + Atalhos personalizáveis + Detecção de URL + Conversas sem resposta
+// @version      5.6.0
+// @description  Sistema completo: Notificações + Logs + Atalhos + Detecção de URL + Conversas sem resposta
 // @author       Douglas Silva
 // @match        https://app.octadesk.com/*
 // @grant        GM_notification
@@ -25,7 +25,7 @@
   const BUTTON_POSITION_KEY = 'octadeskNotifierButtonPosition';
 
   const CONFIG_PADRAO_ATALHOS = {
-    nomeAtendente: 'Douglas Silva',
+    nomeAtendente: 'Preencha seu nome',
     mensagemDia: '{saudacao} {tecnico}, tudo bem?\\n\\nMe chamo {atendente} e vou seguir com seu atendimento.\\n\\nComo posso ajudar?',
     mensagemTarde: '{saudacao} {tecnico}, tudo bem?\\n\\nMe chamo {atendente} e vou seguir com seu atendimento.\\n\\nComo posso ajudar?',
   };
@@ -37,7 +37,7 @@
   let isChecking = false;
   let bufferDigitacao = '';
 
-  // ===== NOVA FUNCIONALIDADE: DETECÇÃO DE URL =====
+  // ===== DETECÇÃO DE URL =====
 
   function verificarURLValida() {
     return window.location.pathname.startsWith('/chat/');
@@ -105,21 +105,17 @@
     log('[URL] Sistema de monitoramento de URL inicializado');
   }
 
-  // ===== FIM DA DETECÇÃO DE URL =====
-
-  // ===== NOVA FUNCIONALIDADE: CONVERSAS SEM RESPOSTA (CORRIGIDA) =====
+  // ===== CONVERSAS SEM RESPOSTA =====
 
   function encontrarSecaoSuasConversas() {
     log('[SEM RESPOSTA] Iniciando busca pela seção "Suas conversas"...');
 
-    // ESTRATÉGIA 1: Buscar pelo data-cy="conversation_list" (mais confiável)
     const conversationList = document.querySelector('[data-cy="conversation_list"]');
     if (conversationList) {
       log('[SEM RESPOSTA] Seção encontrada via data-cy="conversation_list"');
       return conversationList;
     }
 
-    // ESTRATÉGIA 2: Buscar pelo texto "Suas conversas" no menu
     const items = document.querySelectorAll('div[class*="submenu-link"], div[class*="list-item"]');
     log(`[SEM RESPOSTA] Encontrados ${items.length} itens de menu para verificar`);
 
@@ -143,7 +139,6 @@
       }
     }
 
-    // ESTRATÉGIA 3: Fallback - pegar qualquer container com conversas
     const fallbackContainer = document.querySelector('._sidebar-list-container_90sxa_1');
     if (fallbackContainer) {
       log('[SEM RESPOSTA] Usando container fallback (todas as conversas visíveis)');
@@ -189,6 +184,44 @@
 
     log(`[SEM RESPOSTA] AVISO: Formato de tempo não reconhecido: "${textoTempo}"`);
     return 0;
+  }
+
+  function validarConfiguracoesTempoResposta(tempoMinimo, intervalo) {
+    const tempo = parseFloat(tempoMinimo);
+    const inter = parseFloat(intervalo);
+
+    if (isNaN(tempo) || isNaN(inter)) {
+      return { valido: false, mensagem: '❌ Digite apenas números válidos' };
+    }
+
+    if (tempo < 1) {
+      return { valido: false, mensagem: '❌ O tempo mínimo deve ser pelo menos 1 minuto' };
+    }
+
+    if (inter < 0.5) {
+      return { valido: false, mensagem: '❌ O intervalo deve ser pelo menos 0.5 minuto (30 segundos)' };
+    }
+
+    if (tempo > 120) {
+      return { valido: false, mensagem: '⚠️ Tempo mínimo muito alto (máximo: 120 minutos / 2 horas)' };
+    }
+
+    if (inter > 60) {
+      return { valido: false, mensagem: '⚠️ Intervalo muito alto (máximo: 60 minutos)' };
+    }
+
+    if (inter >= tempo) {
+      return { valido: false, mensagem: '❌ O intervalo de re-notificação deve ser MENOR que o tempo mínimo' };
+    }
+
+    if (tempo <= 5 && inter < 1) {
+      return {
+        valido: false,
+        mensagem: '⚠️ Essa combinação pode gerar muitas notificações. Aumente o intervalo ou o tempo mínimo.',
+      };
+    }
+
+    return { valido: true, mensagem: '✅ Configurações válidas' };
   }
 
   function verificarConversasSemResposta() {
@@ -238,6 +271,11 @@
       const conversasCriticas = [];
       const agora = Date.now();
 
+      const TEMPO_MINIMO = notifierSettings.tempoMinimoSemResposta || 10;
+      const INTERVALO_NOTIFICACAO = (notifierSettings.intervaloRenotificacao || 1) * 60000;
+
+      log(`[SEM RESPOSTA] Configurações: Tempo mínimo=${TEMPO_MINIMO}min, Intervalo=${notifierSettings.intervaloRenotificacao}min`);
+
       conversasRespondidas.forEach((elemento, index) => {
         log(`[SEM RESPOSTA] Analisando conversa ${index + 1}/${conversasRespondidas.length}`);
 
@@ -247,11 +285,9 @@
           return;
         }
 
-        // ===== NOVO FILTRO: VERIFICAR SE A CONVERSA É SUA =====
         const atendenteElemento = card.querySelector('.___agent-name_c6ln8_29 ._text-overflow_1or4k_14');
         const nomeAtendente = atendenteElemento ? atendenteElemento.textContent.trim() : '';
 
-        // Pega o nome configurado nos atalhos
         const configAtalhos = loadAtalhosConfig();
         const seuNome = configAtalhos.nomeAtendente;
 
@@ -261,7 +297,6 @@
         }
 
         log(`[SEM RESPOSTA] ✅ Conversa confirmada como sua (Atendente: ${nomeAtendente})`);
-        // ===== FIM DO FILTRO =====
 
         const nomeElemento = card.querySelector('.___name_c6ln8_4 span');
         const nomeCliente = nomeElemento ? nomeElemento.textContent.trim() : 'Cliente';
@@ -278,8 +313,8 @@
 
         log(`[SEM RESPOSTA] ${nomeCliente}: ${minutos} minutos sem resposta`);
 
-        if (minutos >= 10) {
-          log(`[SEM RESPOSTA] ⚠️ CRÍTICO: ${nomeCliente} está >= 10 minutos (${minutos}min)`);
+        if (minutos >= TEMPO_MINIMO) {
+          log(`[SEM RESPOSTA] ⚠️ CRÍTICO: ${nomeCliente} está >= ${TEMPO_MINIMO} minutos (${minutos}min)`);
           conversasCriticas.push({ nome: nomeCliente, minutos });
         }
       });
@@ -287,8 +322,6 @@
       log(`[SEM RESPOSTA] Total de conversas críticas: ${conversasCriticas.length}`);
 
       if (conversasCriticas.length > 0) {
-        const INTERVALO_NOTIFICACAO = 60000; // 1 minuto
-
         Object.keys(ultimasNotificacoesSemResposta).forEach((key) => {
           if (agora - ultimasNotificacoesSemResposta[key] > 120000) {
             delete ultimasNotificacoesSemResposta[key];
@@ -352,9 +385,7 @@
     }
   }
 
-  // ===== FIM CONVERSAS SEM RESPOSTA =====
-
-  // ESTILOS
+  // ===== ESTILOS =====
   const styles = `
         #notifier-btn {
             position: fixed;
@@ -751,6 +782,8 @@
           notificationMode: 'unanswered',
           notificationInterval: 0.5,
           notificarSemResposta: true,
+          tempoMinimoSemResposta: 10,
+          intervaloRenotificacao: 1,
         };
     log('[LOGS] Configurações carregadas.');
   }
@@ -1129,10 +1162,49 @@
                     <label><input type="radio" name="notifInterval" value="5"> 5 Minutos</label>
                     <hr style="border-color:#444;margin:20px 0;">
                     <h4>🕒 Conversas Sem Resposta</h4>
-                    <label><input type="checkbox" id="notificarSemResposta"> Notificar conversas sem retorno do cliente ≥ 10 minutos</label>
-                    <div style="margin-left: 32px; margin-top: 8px; color: #a0a0a0; font-size: 12px; line-height: 1.5;">
-                        Monitora apenas conversas em "Suas conversas" onde você enviou a última mensagem.<br>
-                        Notificações são enviadas a cada 1 minuto enquanto o cliente não responder.
+                    <label>
+                        <input type="checkbox" id="notificarSemResposta">
+                        Notificar conversas sem retorno do cliente
+                    </label>
+                    <div style="margin-left: 32px; margin-top: 16px;">
+                        <div style="margin-bottom: 16px;">
+                            <label style="display: block; margin-bottom: 6px; color: #e0e0e0; font-size: 13px; font-weight: 600;">
+                                ⏱️ Tempo mínimo sem resposta (minutos):
+                            </label>
+                            <input
+                                type="number"
+                                id="tempoMinimoSemResposta"
+                                min="1"
+                                max="120"
+                                step="1"
+                                placeholder="10"
+                                style="width: 100px; padding: 8px; background: #111; border: 1px solid #333; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                            <span style="color: #a0a0a0; font-size: 12px; margin-left: 8px;">
+                                (Ex: 10 = notifica após 10 min sem resposta)
+                            </span>
+                        </div>
+
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; margin-bottom: 6px; color: #e0e0e0; font-size: 13px; font-weight: 600;">
+                                🔔 Intervalo de re-notificação (minutos):
+                            </label>
+                            <input
+                                type="number"
+                                id="intervaloRenotificacao"
+                                min="0.5"
+                                max="60"
+                                step="0.5"
+                                placeholder="1"
+                                style="width: 100px; padding: 8px; background: #111; border: 1px solid #333; border-radius: 6px; color: #e0e0e0; font-size: 13px;">
+                            <span style="color: #a0a0a0; font-size: 12px; margin-left: 8px;">
+                                (Ex: 1 = notifica novamente a cada 1 min)
+                            </span>
+                        </div>
+
+                        <div id="validacao-tempo-resposta" style="padding: 10px; border-radius: 6px; font-size: 12px; display: none; margin-top: 12px;"></div>
+                    </div>
+                    <div style="margin-left: 32px; margin-top: 12px; color: #a0a0a0; font-size: 12px; line-height: 1.5;">
+                        💡 <strong>Dica:</strong> Tempo menor = mais notificações. Recomendado: 10 min (tempo) / 1 min (intervalo)
                     </div>
                 </div>
                 <div class="notifier-footer">
@@ -1212,10 +1284,39 @@
       notifierSettings.notificationMode = document.querySelector('input[name="notifMode"]:checked').value;
       notifierSettings.notificationInterval = parseFloat(document.querySelector('input[name="notifInterval"]:checked').value);
       notifierSettings.notificarSemResposta = document.getElementById('notificarSemResposta').checked;
+
+      const tempoMinimo = document.getElementById('tempoMinimoSemResposta').value;
+      const intervalo = document.getElementById('intervaloRenotificacao').value;
+
+      const validacao = validarConfiguracoesTempoResposta(tempoMinimo, intervalo);
+
+      const divValidacao = document.getElementById('validacao-tempo-resposta');
+
+      if (!validacao.valido) {
+        divValidacao.style.display = 'block';
+        divValidacao.style.background = '#4a1515';
+        divValidacao.style.border = '1px solid #dc2626';
+        divValidacao.style.color = '#fca5a5';
+        divValidacao.textContent = validacao.mensagem;
+
+        showToast(validacao.mensagem, 4000);
+        log(`[LOGS] Erro de validação: ${validacao.mensagem}`);
+        return;
+      }
+
+      notifierSettings.tempoMinimoSemResposta = parseFloat(tempoMinimo);
+      notifierSettings.intervaloRenotificacao = parseFloat(intervalo);
+
+      divValidacao.style.display = 'block';
+      divValidacao.style.background = '#1a3a1a';
+      divValidacao.style.border = '1px solid #38a169';
+      divValidacao.style.color = '#9ae6b4';
+      divValidacao.textContent = validacao.mensagem;
+
       localStorage.setItem(NOTIFIER_SETTINGS_KEY, JSON.stringify(notifierSettings));
 
       const modeText = notifierSettings.notificationMode === 'unanswered' ? 'somente "Não respondidas"' : 'sempre que houver em "Suas conversas"';
-      log(`[LOGS] Configurações salvas! Modo: ${modeText}, Intervalo: ${notifierSettings.notificationInterval} min.`);
+      log(`[LOGS] Configurações salvas! Modo: ${modeText}, Intervalo: ${notifierSettings.notificationInterval} min, Tempo sem resposta: ${notifierSettings.tempoMinimoSemResposta} min, Re-notificação: ${notifierSettings.intervaloRenotificacao} min`);
 
       startPeriodicNotification();
       iniciarMonitoramentoSemResposta();
@@ -1278,6 +1379,8 @@
     document.querySelector(`input[name="notifMode"][value="${notifierSettings.notificationMode}"]`).checked = true;
     document.querySelector(`input[name="notifInterval"][value="${notifierSettings.notificationInterval}"]`).checked = true;
     document.getElementById('notificarSemResposta').checked = notifierSettings.notificarSemResposta !== false;
+    document.getElementById('tempoMinimoSemResposta').value = notifierSettings.tempoMinimoSemResposta || 10;
+    document.getElementById('intervaloRenotificacao').value = notifierSettings.intervaloRenotificacao || 1;
   }
 
   function populateAtalhosSettings() {
@@ -1346,8 +1449,8 @@
     iniciarMonitoramentoURL();
     iniciarMonitoramentoSemResposta();
 
-    log('[NOTIFIER] Octadesk Notifier v5.5.1 inicializado com sucesso');
-    console.log('✅ Octadesk Notifier v5.5.1 carregado');
+    log('[NOTIFIER] Octadesk Notifier v5.6.0 inicializado com sucesso');
+    console.log('✅ Octadesk Notifier v5.6.0 carregado');
   }
 
   if (window.top === window.self) {

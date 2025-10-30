@@ -1,9 +1,9 @@
 # Octadesk Notifier
 
-**Versão:** 5.5.1  
+**Versão:** 5.6.0  
 **Autor:** Douglas Silva
 
-Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, **alerta sobre conversas sem resposta do cliente**, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
+Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, **alerta sobre conversas sem resposta do cliente (configurável)**, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
 
 ---
 
@@ -19,7 +19,7 @@ Este UserScript para Tampermonkey foi criado para resolver múltiplos desafios n
 O script conta com um **painel de controle moderno** (3 abas), **botão flutuante arrastável** e **posição persistente**, garantindo que nunca atrapalhe sua visualização.
 
 <div align="center">
-  <img src="img/Octadesk-Notifier.gif" alt="Demonstração do Octadesk Notifier v5.5.1" width="85%" />
+  <img src="img/Octadesk-Notifier.gif" alt="Demonstração do Octadesk Notifier v5.6.0" width="85%" />
   <p><em>📹 Demonstração completa: Notificações, Logs, Configurações e Atalhos</em></p>
 </div>
 
@@ -41,11 +41,14 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - **Intervalos Configuráveis:** Frequência de verificação ajustável: **30 segundos, 1, 3 ou 5 minutos**
 - **Atualização Automática:** Clica no botão "Atualizar" antes de cada verificação
 
-### 🕒 Monitoramento de Conversas Sem Resposta (NOVO v5.5.1)
+### 🕒 Monitoramento de Conversas Sem Resposta (v5.6.0)
 
-- **Alerta Proativo:** Notifica quando conversas em "Suas conversas" estão **≥ 10 minutos sem resposta do cliente**
+- **Alerta Proativo:** Notifica quando conversas em "Suas conversas" estão sem resposta do cliente
+- **Tempo Configurável:** Defina o tempo mínimo (padrão: 10 minutos) via interface
+- **Intervalo Personalizável:** Configure o intervalo de re-notificação (padrão: 1 minuto)
 - **Filtragem Inteligente:** Monitora apenas conversas onde **você enviou a última mensagem**
-- **Notificações Recorrentes:** Alerta **a cada 1 minuto** enquanto o cliente não responder
+- **Notificações Recorrentes:** Alerta continuamente até o cliente responder
+- **Validação Inteligente:** Sistema bloqueia configurações inválidas automaticamente
 - **Ativação/Desativação:** Checkbox na aba "Configurações" para controlar a funcionalidade
 - **Logs Detalhados:** Rastreamento completo com prefixo `[SEM RESPOSTA]` para debug
 
@@ -103,7 +106,7 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 
 1. Abra o painel do **Tampermonkey** e clique em **"Criar um novo script..."**
 2. Apague todo o conteúdo padrão
-3. Copie o código completo do arquivo `octadesk-notifier-v5.5.1.user.js`
+3. Copie o código completo do arquivo `octadesk-notifier-v5.6.0.user.js`
 4. Cole na tela de edição do Tampermonkey
 5. Salve o script (**Arquivo > Salvar** ou `Ctrl+S`)
 6. Certifique-se de que está **ativado** no painel
@@ -118,8 +121,11 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 4. Escolha:
    - **Modo de Notificação** (Condicional ou Geral)
    - **Intervalo de Verificação** (30s, 1min, 3min ou 5min)
-   - **Notificar conversas sem retorno do cliente ≥ 10 minutos** (ativado por padrão)
+   - **Ativar monitoramento de conversas sem resposta** (checkbox)
+   - **Tempo mínimo sem resposta** (1-120 minutos, padrão: 10)
+   - **Intervalo de re-notificação** (0.5-60 minutos, padrão: 1)
 5. Clique em **"Salvar e Aplicar"**
+6. Aguarde a mensagem de validação (✅ verde = OK, ❌ vermelho = erro)
 
 #### 2. Configure os Atalhos (Opcional)
 
@@ -142,11 +148,18 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 
 #### Monitoramento de Conversas Sem Resposta
 
-- **Ativado por padrão** na instalação
-- Verifica automaticamente a cada **1 minuto**
-- Notifica com mensagem específica: **"🕒 Conversa aguardando há mais de 10 minutos"**
-- Inclui nome do cliente e tempo exato sem resposta
-- Para desativar: desmarque o checkbox na aba "Configurações"
+- **Configuração flexível:**
+  - Defina o **tempo mínimo** antes da primeira notificação (1-120 min)
+  - Ajuste o **intervalo de re-notificação** (0.5-60 min)
+  - Recomendado: 10 min (tempo) / 1 min (intervalo)
+- **Validações automáticas:**
+  - Bloqueia intervalos maiores que o tempo mínimo
+  - Previne configurações que causam spam de notificações
+  - Feedback visual em tempo real (verde/vermelho)
+- **Notificação:**
+  - Título: **"🔔 Retorno pendente do cliente"**
+  - Corpo: **"[Nome] - X minutos sem responder"**
+- **Para desativar:** Desmarque o checkbox na aba "Configurações"
 
 #### Pausar Notificações
 
@@ -187,6 +200,16 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - Verifique se a opção está **ativada** na aba "Configurações"
 - Certifique-se de que a conversa tem a classe `___answered_c6ln8_7` (você enviou a última mensagem)
 - Recarregue a página e aguarde 5 segundos para a primeira verificação
+
+### Erro ao salvar configurações de tempo/intervalo
+
+- Verifique se os valores estão dentro dos limites:
+  - **Tempo mínimo:** 1-120 minutos
+  - **Intervalo:** 0.5-60 minutos
+- **Regra importante:** Intervalo DEVE ser menor que o tempo mínimo
+- Exemplo válido: Tempo=10, Intervalo=1 ✅
+- Exemplo inválido: Tempo=5, Intervalo=10 ❌
+- Leia a mensagem de validação (aparece abaixo dos campos em vermelho/verde)
 
 ### Painel não abre com Ctrl+Shift+L
 
