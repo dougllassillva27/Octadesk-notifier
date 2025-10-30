@@ -1,9 +1,9 @@
 # Octadesk Notifier
 
-**Versão:** 5.4   
+**Versão:** 5.5.1  
 **Autor:** Douglas Silva
 
-Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
+Uma ferramenta completa de automação, monitoramento e produtividade para o Octadesk. O script notifica proativamente sobre conversas pendentes, **alerta sobre conversas sem resposta do cliente**, mantém logs detalhados e inclui **atalhos de texto personalizáveis** para agilizar o atendimento. Totalmente configurável através de interface própria com design moderno e intuitivo.
 
 ---
 
@@ -12,13 +12,14 @@ Uma ferramenta completa de automação, monitoramento e produtividade para o Oct
 Este UserScript para Tampermonkey foi criado para resolver múltiplos desafios no dia a dia do atendimento via Octadesk:
 
 1. **Monitoramento Inteligente:** Detecta conversas pendentes e envia notificações automáticas
-2. **Logs Detalhados:** Registra todas as ações com timestamp para auditoria e troubleshooting
-3. **Atalhos de Texto:** Cria mensagens personalizadas com detecção automática do técnico em atendimento
+2. **Alerta de Conversas Paradas:** Notifica quando cliente não responde há ≥ 10 minutos
+3. **Logs Detalhados:** Registra todas as ações com timestamp para auditoria e troubleshooting
+4. **Atalhos de Texto:** Cria mensagens personalizadas com detecção automática do técnico em atendimento
 
 O script conta com um **painel de controle moderno** (3 abas), **botão flutuante arrastável** e **posição persistente**, garantindo que nunca atrapalhe sua visualização.
 
 <div align="center">
-  <img src="img/Octadesk-Notifier.gif" alt="Demonstração do Octadesk Notifier v5.3" width="85%" />
+  <img src="img/Octadesk-Notifier.gif" alt="Demonstração do Octadesk Notifier v5.5.1" width="85%" />
   <p><em>📹 Demonstração completa: Notificações, Logs, Configurações e Atalhos</em></p>
 </div>
 
@@ -39,6 +40,14 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
   2. **Modo Geral:** Notifica sempre que houver qualquer conversa em "Suas conversas"
 - **Intervalos Configuráveis:** Frequência de verificação ajustável: **30 segundos, 1, 3 ou 5 minutos**
 - **Atualização Automática:** Clica no botão "Atualizar" antes de cada verificação
+
+### 🕒 Monitoramento de Conversas Sem Resposta (NOVO v5.5.1)
+
+- **Alerta Proativo:** Notifica quando conversas em "Suas conversas" estão **≥ 10 minutos sem resposta do cliente**
+- **Filtragem Inteligente:** Monitora apenas conversas onde **você enviou a última mensagem**
+- **Notificações Recorrentes:** Alerta **a cada 1 minuto** enquanto o cliente não responder
+- **Ativação/Desativação:** Checkbox na aba "Configurações" para controlar a funcionalidade
+- **Logs Detalhados:** Rastreamento completo com prefixo `[SEM RESPOSTA]` para debug
 
 ### 📊 Logs e Monitoramento
 
@@ -64,7 +73,7 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 
 - **Painel de Controle com 3 Abas:**
   1. **Logs:** Histórico de operações + controles de pausa
-  2. **Configurações:** Modo de notificação + intervalo de verificação
+  2. **Configurações:** Modo de notificação + intervalo de verificação + ativação de alerta de conversas sem resposta
   3. **Atalhos:** Configuração de mensagens personalizadas
 - **Botão Flutuante Arrastável:**
   - **Clique:** Abre o painel de controle
@@ -87,7 +96,7 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 
 1. Abra o painel do **Tampermonkey** e clique em **"Criar um novo script..."**
 2. Apague todo o conteúdo padrão
-3. Copie o código completo do arquivo `octadesk-notifier-v3.22.user.js`
+3. Copie o código completo do arquivo `octadesk-notifier-v5.5.1.user.js`
 4. Cole na tela de edição do Tampermonkey
 5. Salve o script (**Arquivo > Salvar** ou `Ctrl+S`)
 6. Certifique-se de que está **ativado** no painel
@@ -102,6 +111,7 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 4. Escolha:
    - **Modo de Notificação** (Condicional ou Geral)
    - **Intervalo de Verificação** (30s, 1min, 3min ou 5min)
+   - **Notificar conversas sem retorno do cliente ≥ 10 minutos** (ativado por padrão)
 5. Clique em **"Salvar e Aplicar"**
 
 #### 2. Configure os Atalhos (Opcional)
@@ -122,6 +132,14 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - Basta manter a aba do Octadesk aberta
 - O script monitora automaticamente e notifica quando necessário
 - Permita notificações no navegador quando solicitado
+
+#### Monitoramento de Conversas Sem Resposta
+
+- **Ativado por padrão** na instalação
+- Verifica automaticamente a cada **1 minuto**
+- Notifica com mensagem específica: **"🕒 Conversa aguardando há mais de 10 minutos"**
+- Inclui nome do cliente e tempo exato sem resposta
+- Para desativar: desmarque o checkbox na aba "Configurações"
 
 #### Pausar Notificações
 
@@ -156,6 +174,13 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - Desative "Não Incomodar" no sistema operacional
 - Confirme que o script está ativado no Tampermonkey
 
+### Notificações de conversas sem resposta não funcionam
+
+- Abra o Console (F12) e procure por logs com prefixo `[SEM RESPOSTA]`
+- Verifique se a opção está **ativada** na aba "Configurações"
+- Certifique-se de que a conversa tem a classe `___answered_c6ln8_7` (você enviou a última mensagem)
+- Recarregue a página e aguarde 5 segundos para a primeira verificação
+
 ### Painel não abre com Ctrl+Shift+L
 
 - Verifique se o script está ativo no Tampermonkey
@@ -179,8 +204,6 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - Certifique-se de que não há múltiplas abas do Octadesk abertas
 - O script possui proteção contra timers duplicados
 
----
-
 ## Tecnologias Utilizadas
 
 - **JavaScript ES6+**
@@ -188,13 +211,10 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - **Web Notifications API**
 - **LocalStorage API**
 - **CSS3 (Gradients, Animations, Flexbox)**
+- **MutationObserver API**
 
 ---
 
 ## Licença
 
 Este projeto é de uso pessoal e educacional. Sinta-se livre para modificar e adaptar às suas necessidades.
-
----
-
-**🎯 Octadesk Notifier v5.3 - Nunca mais perca uma conversa importante!**
