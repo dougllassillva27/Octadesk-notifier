@@ -2,7 +2,7 @@
 // @name         Octadesk Notifier
 // @namespace    http://tampermonkey.net/
 // @version      5.5.1
-// @description  Sistema completo: Notificações + Logs + Atalhos personalizáveis + Detecção de URL + Conversas sem resposta (CORRIGIDO)
+// @description  Sistema completo: Notificações + Logs + Atalhos personalizáveis + Detecção de URL + Conversas sem resposta
 // @author       Douglas Silva
 // @match        https://app.octadesk.com/*
 // @grant        GM_notification
@@ -247,6 +247,22 @@
           return;
         }
 
+        // ===== NOVO FILTRO: VERIFICAR SE A CONVERSA É SUA =====
+        const atendenteElemento = card.querySelector('.___agent-name_c6ln8_29 ._text-overflow_1or4k_14');
+        const nomeAtendente = atendenteElemento ? atendenteElemento.textContent.trim() : '';
+
+        // Pega o nome configurado nos atalhos
+        const configAtalhos = loadAtalhosConfig();
+        const seuNome = configAtalhos.nomeAtendente;
+
+        if (nomeAtendente !== seuNome) {
+          log(`[SEM RESPOSTA] ⏭️ Pulando conversa de outro atendente: ${nomeAtendente} (esperado: ${seuNome})`);
+          return;
+        }
+
+        log(`[SEM RESPOSTA] ✅ Conversa confirmada como sua (Atendente: ${nomeAtendente})`);
+        // ===== FIM DO FILTRO =====
+
         const nomeElemento = card.querySelector('.___name_c6ln8_4 span');
         const nomeCliente = nomeElemento ? nomeElemento.textContent.trim() : 'Cliente';
         log(`[SEM RESPOSTA] Cliente: ${nomeCliente}`);
@@ -290,8 +306,8 @@
             log(`[SEM RESPOSTA] 🔔 ENVIANDO NOTIFICAÇÃO para ${conversa.nome}`);
 
             if (Notification.permission === 'granted') {
-              new Notification('🕒 Conversa aguardando há mais de 10 minutos', {
-                body: `${conversa.nome} está sem resposta há ${conversa.minutos} minuto${conversa.minutos > 1 ? 's' : ''}`,
+              new Notification('🔔 Retorno pendente do cliente', {
+                body: `${conversa.nome} - ${conversa.minutos} minuto${conversa.minutos > 1 ? 's' : ''} sem responder`,
                 icon: 'https://www.octadesk.com/favicon.ico',
                 tag: 'octadesk-sem-resposta',
                 renotify: true,

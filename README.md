@@ -49,6 +49,13 @@ O script conta com um **painel de controle moderno** (3 abas), **botão flutuant
 - **Ativação/Desativação:** Checkbox na aba "Configurações" para controlar a funcionalidade
 - **Logs Detalhados:** Rastreamento completo com prefixo `[SEM RESPOSTA]` para debug
 
+### ⚠️ IMPORTANTE: Verifique Seu Nome nos Atalhos
+
+- Abra o painel do Notifier (Ctrl+Shift+L)
+- Vá na aba "**Atalhos**"
+- Certifique-se de que o campo "**Seu Nome**" está exatamente como aparece no Octadesk
+- Exemplo: Se no Octadesk aparece **Douglas Silva**, coloque **Douglas Silva** (com espaço e maiúsculas/minúsculas iguais)
+
 ### 📊 Logs e Monitoramento
 
 - **Histórico Detalhado:** Timestamp preciso de todas as ações (ciclos, pausas, configurações)
